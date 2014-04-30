@@ -57,7 +57,13 @@ if isfile(home+'/.pwman/passwd'):
 		pass
 	pass
 else:
-	string = getpass('Make new password: ')
+	while True:
+		string = getpass('Make new master password: ')
+		string2 = getpass('Type it again: ')
+		if string == string2:
+			break
+		print "Passwords do not match! Try again..."
+		pass
 	passout = open(home+'/.pwman/passwd','w')
 	passout.write( hashlib.md5(string).digest() )
 	passout.close()
@@ -107,6 +113,20 @@ elif '--reset' in args:
 			pass
 		pass
 	pass
+elif '--change-master-password' in args:
+	while True:
+		string = getpass('New master password: ')
+		string2 = getpass('Type it again: ')
+		if string == string2:
+			break
+		print "Passwords do not match! Try again..."
+		pass
+	passout = open(home+'/.pwman/passwd','w')
+	passout.write( hashlib.md5(string).digest() )
+	passout.close()
+	modified = True
+	print "Successfully changed master password."
+
 
 if modified:
 	outstring = makeString( data )
