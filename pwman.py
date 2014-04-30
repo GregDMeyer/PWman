@@ -5,8 +5,6 @@ import hashlib
 from getpass import getpass
 from os.path import expanduser, isfile
 home = expanduser("~") # get the address of the user's home directory
-
-sys.path.append('/Users/gregmeyer/Documents/Python/import/')
 import aes #make sure that aes is in the right spot!
 import copypaste
 
