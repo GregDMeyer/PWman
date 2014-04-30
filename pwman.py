@@ -1,3 +1,5 @@
+#! /usr/bin/env python
+
 import os
 import sys
 import errno
@@ -35,15 +37,15 @@ def makeString(dataDict):
 	return outstring
 
 #make sure the directory exists
-check_or_make_dir(home+'/.pwman')
+check_or_make_dir(home+'/.pwman_test')
 
 # see if a password has been set. if it has been set, check it,
 # otherwise ask the user for one. If somebody deletes the password
 # file to try to get by this, that's fine... the decryption later
 # won't work with the wrong password. This is just really to make 
 # it easier for the user to be sure they have the right one.
-if isfile(home+'/.pwman/passwd'):
-	hashfile = open(home+'/.pwman/passwd','r')
+if isfile(home+'/.pwman_test/passwd'):
+	hashfile = open(home+'/.pwman_test/passwd','r')
 	hashed = hashfile.read()
 	string = ''
 	while True:
@@ -64,7 +66,7 @@ else:
 			break
 		print "Passwords do not match! Try again..."
 		pass
-	passout = open(home+'/.pwman/passwd','w')
+	passout = open(home+'/.pwman_test/passwd','w')
 	passout.write( hashlib.md5(string).digest() )
 	passout.close()
 
@@ -72,8 +74,8 @@ nodata = False
 modified = False
 origdata = {}
 
-if isfile(home+'/.pwman/data'):
-	datastring = aes.decrypt(home+'/.pwman/data',string)
+if isfile(home+'/.pwman_test/data'):
+	datastring = aes.decrypt(home+'/.pwman_test/data',string)
 	if not datastring.strip() == '':
 			data = dict( (service.strip(), passwd.strip()) for service,passwd in (item.split('\n') for item in datastring.split('\n,\n')[:-1]))
 	else:
@@ -95,7 +97,7 @@ if '--new' in args:
 	pass
 elif '--get' in args:
 	if (len(args) >= args.index('--get') + 2) and args[ args.index('--get') + 1 ] in data:
-		copypaste.copy( data[ args[ args.index('--get') + 1 ] ] )
+		copypaste.tempcopy( data[ args[ args.index('--get') + 1 ] ] )
 		pass
 	else:
 		print "No password saved for service",args[1]
@@ -108,8 +110,8 @@ elif '--reset' in args:
 	if query in ['y','Y','yes']:
 		query2 = raw_input('... really sure? ')
 		if query2 in ['y','Y','yes']:
-			os.remove(home+'/.pwman/data')
-			os.remove(home+'/.pwman/passwd')
+			os.remove(home+'/.pwman_test/data')
+			os.remove(home+'/.pwman_test/passwd')
 			pass
 		pass
 	pass
@@ -121,7 +123,7 @@ elif '--change-master-password' in args:
 			break
 		print "Passwords do not match! Try again..."
 		pass
-	passout = open(home+'/.pwman/passwd','w')
+	passout = open(home+'/.pwman_test/passwd','w')
 	passout.write( hashlib.md5(string).digest() )
 	passout.close()
 	modified = True
@@ -130,4 +132,4 @@ elif '--change-master-password' in args:
 
 if modified:
 	outstring = makeString( data )
-	aes.encrypt(outstring,home+'/.pwman/data',string)
+	aes.encrypt(outstring,home+'/.pwman_test/data',string)
