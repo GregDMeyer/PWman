@@ -7,7 +7,7 @@ This is a simple utility written in Python which stores passwords for various se
 
 When a password is accessed, it doesn't show up in stdout. Instead, it is copied to the clipboard for 20 seconds, after which time it is overwritten by whatever was on the clipboard before.
 
-All passwords are hidden behind aes-256 encryption, with the master password needed to decrypt them.
+All passwords are saved under aes-256 encryption, with the master password needed to decrypt them.
 
 Note - this utility will only work on Mac. With some slight modifications to the copying, hashing and encoding scripts it could be made to run on Linux pretty easily.
 
