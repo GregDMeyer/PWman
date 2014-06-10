@@ -9,7 +9,7 @@ When a password is accessed, it doesn't show up in stdout. Instead, it is copied
 
 All passwords are saved under aes-256 encryption, with the master password needed to decrypt them.
 
-Note - this utility will only work on Mac. With some slight modifications to the copying, hashing and encoding scripts it could be made to run on Linux pretty easily.
+Note - this utility will only work on Mac. A Linux version can be seen at GregDMeyer/PWman_linux.
 
 ----
 
@@ -18,7 +18,7 @@ INSTALLING
 Copy all three files (pwman.py, aes.py, and copypaste.py) into the same directory. Then navigate to that directory and type:
 
 ~~~~
-chmod 755 pwman.py
+chmod +x pwman.py
 ln -s /path/to/pwman.py /usr/local/bin/pwman
 ~~~~
 
@@ -35,7 +35,7 @@ Alternatively, the utility can be run easily by going to the directory containin
 You probably will need to do 
 
 ~~~~
-chmod 755 pyman.py
+chmod +x pyman.py
 ~~~~
 
 first so that it is executable, or else it will give an error.
