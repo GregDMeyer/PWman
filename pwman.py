@@ -9,6 +9,7 @@ from os.path import expanduser, isfile
 home = expanduser("~") # get the address of the user's home directory
 import aes # make sure that aes and copypaste are in the right spot!
 import copypaste
+import cPickle
 
 args = sys.argv[1:] #get a list of the arguments, without the original function name
 
@@ -46,14 +47,6 @@ def GetNewPasswd( service=False, keys=[], new=True ):
 
 	newpass = getpass('Password for service \''+service+'\': ')
 	return {service: newpass}
-
-#turn the data in the dictionary into a string to be encoded and stored to drive
-def makeString(dataDict):
-	outstring = ''
-	for serv, passwd in dataDict.iteritems():
-		outstring += serv+'\n'+passwd+'\n,\n'
-		pass
-	return outstring
 
 # what arguments are OK?
 valid_args = ['new','change','update','get','list','reset','change-master-password','remove']
@@ -132,7 +125,7 @@ modified = False
 if isfile(home+'/.pwman_test/data'):
 	datastring = aes.decrypt(home+'/.pwman_test/data',string)
 	if not datastring.strip() == '':
-			data = dict( (service.strip(), passwd.strip()) for service,passwd in (item.split('\n') for item in datastring.split('\n,\n')[:-1]))
+		data = cPickle.loads( datastring )
 	else:
 		nodata=True
 else:
@@ -271,5 +264,5 @@ elif 'remove' in args:
 
 # check if we need to modify the saved datafile. if so, re-encrypt and rewrite it.
 if modified:
-	outstring = makeString( data )
+	outstring = cPickle.dumps( data )
 	aes.encrypt(outstring,home+'/.pwman_test/data',string)
