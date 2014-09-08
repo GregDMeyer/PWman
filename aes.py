@@ -1,4 +1,3 @@
-import subprocess
 from Crypto.Cipher import AES
 from Crypto import Random
 import hashlib
@@ -110,5 +109,3 @@ def oldDecryptFromFile(infile,password):
         p = subprocess.Popen(['openssl','aes-256-cbc','-d','-in',infile,'-pass','stdin'], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
         out = p.communicate(password)[0]
         return out
-
-
