@@ -383,7 +383,18 @@ class myShowHidePassEntry( tk.Frame, object ):
 		self.entry.bind('<FocusIn>', self.FocusIn )
 		self.entry.bind('<FocusOut>', self.FocusOut )
 
+		self.focusInCommand = None
+		self.focusOutCommand = None
+
 	def FocusIn( self, event ):
+
+		if self.focusInCommand:
+			self.focusInCommand()
+			pass
+
+		if self.focusOutCommand:
+			self.focusOutCommand()
+			pass
 
 		if self.empty:
 			self.entry.delete(0,tk.END)
@@ -433,6 +444,26 @@ class myShowHidePassEntry( tk.Frame, object ):
 			return self.entry.get(*args,**kwargs)
 			pass
 
+	def bind(self,*args,**kwargs):
+
+		if '<FocusIn>' in args or '<FocusOut>' in args:
+
+			self._myBind(*args,**kwargs)
+			return
+
+		self.entry.bind(*args,**kwargs)
+		pass
+
+	def _myBind(self, *args, **kwargs):
+
+		if args[0] == '<FocusIn>':
+			self.focusInCommand = args[1]
+			pass
+		elif args[0] == '<FocusOut>':
+			self.focusOutCommand = args[1]
+			pass
+		else:
+			raise Exception('Something\'s broken in _myBind in myShowHidePassEntry.')
 
 
 class myTitle( tk.Text ):
@@ -650,6 +681,10 @@ class myPageList( tk.Frame, object):
 		for button in self.showedButtons:
 			button.makeInactive()
 			pass
+
+		# don't keep adding letters if there's nothing left of the list!
+		if not self.nameList:
+			return
 
 		self.filter += event.char
 

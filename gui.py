@@ -388,13 +388,14 @@ class New:
 		self.frame.pack( fill='both',expand=True,)
 
 		self.text = myTitle( self.frame, text='SAVE NEW' )
-		self.text.pack()
+		self.text.pack(fill='x')
 
 		self.serv_name_in = myEntry( self.frame, text='NAME' )
 		self.serv_name_in.pack(fill='x')
 
 		self.serv_pass_in = myShowHidePassEntry( self.frame, text='PASSWORD',)
 		self.serv_pass_in.pack()
+		self.serv_pass_in.bind('<Return>',self.Save)
 
 		# self.showpass = IntVar()
 
@@ -672,10 +673,10 @@ class ChangeMasterPass:
 		self.pass_in2.pack()
 
 		self.save_button = myButton( self.frame, text='SAVE', command=self.Save )
-		self.save_button.pack()
+		self.save_button.pack(fill='x')
 
 		self.cancel_button = myButton( self.frame, text='CANCEL', command=self.Cancel )
-		self.cancel_button.pack(side='bottom',)
+		self.cancel_button.pack(side='bottom',fill='x')
 
 
 	def Save(self, event=None ):
