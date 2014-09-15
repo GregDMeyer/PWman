@@ -5,9 +5,7 @@ Designed for speed of access, ease of use, and simplicity.
 Can be run simply with:
 
 ~~~~
-
-python main.py
-
+$ python main.py
 ~~~~
 
 ----
