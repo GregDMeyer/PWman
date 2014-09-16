@@ -682,7 +682,7 @@ class myPageList( tk.Frame, object):
 			button.makeInactive()
 			pass
 
-		# don't keep adding letters if there's nothing left of the list!
+		# don't keep adding letters if there is nothing left of the list!
 		if not self.nameList:
 			return
 
@@ -853,7 +853,9 @@ class myWarningManager( tk.Frame, object ):
 			self.warnings[ name ].destroy()
 			pass
 
-		self.warnings[ name ] = myMessage( self, text = text, )
+		numLines = text.count('\n') + 1
+
+		self.warnings[ name ] = myMessage( self, text = text, height = numLines)
 		self.warnings[ name ].pack(fill='x')
 
 		if not self.winfo_ismapped():

@@ -6,6 +6,8 @@ import machinery
 import copypaste
 import string
 import time
+import webbrowser
+import tkHyperlinkManager
 
 ### about window
 
@@ -14,7 +16,7 @@ class About:
 	def __init__(self,master):
 
 		self.master = master
-		self.frame = Frame(self.master,width=300,height=500)
+		self.frame = Frame(self.master,width=350,height=500)
 		self.frame.pack_propagate(False)
 		self.frame.pack(fill='both',expand=True)
 
@@ -22,15 +24,18 @@ class About:
 		self.title.pack(fill='x')
 
 		text = '''PWman, version 2.0
+'''+u'\u00A9'+'''2014 Greg Meyer
 
 Created by Greg Meyer
 
 Written in Python, using Tkinter
 
 DISCLAIMER:
-There is no guarantee that passwords will be safe under this program. Though AES-256 encryption is considered impossible to break without the password, a weak master password can be easy to simply guess. Please, choose a good master password!
+There is no guarantee or warranty that passwords will be safe under this program. Like in the GNU GPL, it is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-Also, it is generally a good idea to only save passwords here that you don't know by heart, and aren't crucial to your life. Saving your social security number and banking information here probably isn't a good idea. But, saving the password that you always forget to your Twitter account is probably fine.
+Though AES-256 encryption is considered impossible to break without the password, a weak master password can be easy to simply guess. Please, choose a good master password!
+
+Also, it is generally a good idea to only save passwords here that you don't know by heart, and aren't crucial to your life. Saving your social security number and banking information here probably isn't a good idea. But, saving the password that you always forget to your Twitter account is great.
 
 SECURITY INFO:
 The password data is saved under 256-bit AES encryption, which has approved by the US government for top secret documents.  50,000 iteration key stretching with a salt is implemented to prevent brute force attacks against the password.
@@ -39,7 +44,13 @@ The password data is saved under 256-bit AES encryption, which has approved by t
 
 Special thanks to Sara Kahanamoku for helping me choose nice colors :)
 
-Also, thanks to the people on Stack Overflow who have an answer to any coding question in the world.'''
+Thanks to Jeff Zhang for using computers a lot and knowing what feels intuitive. Also for advice on the logo.
+
+Also, thanks to the people on Stack Overflow who have an answer to any coding question in the world.
+
+*****
+
+PWman is open source! Check out the code here: '''
 
 		self.text = Text(
 			self.frame, 
@@ -49,12 +60,27 @@ Also, thanks to the people on Stack Overflow who have an answer to any coding qu
 			highlightthickness = 0,
 			)
 
-		self.text.insert(END,text)
-		self.text.config(state='disabled')
+		link = tkHyperlinkManager.HyperlinkManager(self.text)
 
-		self.text.pack(fill='both',expand=True)
+		self.text.insert(END,text)
+
+		self.text.insert(END,'https://github.com/GregDMeyer/PWman', link.add(self._openGithub) )
+
+		self.text.insert(END,'\n\n')
+
+		self.scrollbar = Scrollbar(self.frame)
+		self.scrollbar.config(command=self.text.yview)
+
+		self.text.config(state='disabled',yscrollcommand=self.scrollbar.set)
+
+		self.scrollbar.pack(side=RIGHT, fill=Y)
+		self.text.pack(side=LEFT,fill='both',expand=True)
 
 		return
+
+	def _openGithub(self,event=None):
+
+		webbrowser.open('https://github.com/GregDMeyer/PWman')
 
 
 
@@ -282,7 +308,7 @@ class login:
 			self.app.Quit()
 			return
 
-		self.app.warningManager.displayWarning(name='badPass',text='Incorrect password! Try again...')
+		self.app.warningManager.displayWarning(name='badPass',text='Incorrect password! Please try again. \n '+str(2-self.nTries)+' attempt'+('s' if self.nTries<1 else '')+' remaining.')
 
 		self.passin.delete(0,END)
 
@@ -609,7 +635,7 @@ class Remove:
 
 		del( self.app.data[ self.list.getSelection() ] )
 		self.app.SaveData()
-		self.app.ChangeState( mainMenu )
+		self.app.ChangeState( Remove )
 		pass
 
 	def goMainMenu( self, event=None ):

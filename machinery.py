@@ -88,4 +88,3 @@ def CopyPass( password, time ):
 def WriteFile( data, password ):
 	outstring = cPickle.dumps( data )
 	aes.encryptToFile(outstring,home+'/.pwman_test/data',password)
-	print 'Data saved.'
