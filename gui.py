@@ -31,9 +31,7 @@ Created by Greg Meyer
 Written in Python, using Tkinter
 
 DISCLAIMER:
-There is no guarantee or warranty that passwords will be safe under this program. Like in the GNU GPL, it is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-Though AES-256 encryption is considered impossible to break without the password, a weak master password can be easy to simply guess. Please, choose a good master password!
+There is no guarantee or warranty that passwords will be safe under this program. Though AES-256 encryption is considered impossible to break without the password, a weak master password can be easy to simply guess. Please, choose a good master password!
 
 Also, it is generally a good idea to only save passwords here that you don't know by heart, and aren't crucial to your life. Saving your social security number and banking information here probably isn't a good idea. But, saving the password that you always forget to your Twitter account is great.
 
@@ -66,7 +64,26 @@ PWman is open source! Check out the code here: '''
 
 		self.text.insert(END,'https://github.com/GregDMeyer/PWman', link.add(self._openGithub) )
 
-		self.text.insert(END,'\n\n')
+		text2 = ''' 
+		
+*****
+
+LICENSE 
+
+'''+u'\u00A9'+'''2014, Greg Meyer
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+'''
+
+		self.text.insert(END,text2)
 
 		self.scrollbar = Scrollbar(self.frame)
 		self.scrollbar.config(command=self.text.yview)
