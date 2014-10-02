@@ -133,6 +133,17 @@ class App:
 
 	def ChangeState(self,newstate):
 
+		for char in string.ascii_letters+string.digits+string.punctuation:
+			if char == '<':
+				char = '<less>'
+				pass
+			self.current.frame.unbind_all(char)
+			pass
+
+		self.current.frame.unbind_all('<space>')
+
+		self.current.frame.unbind_all('<BackSpace>')
+
 		self.current.frame.pack_forget()
 		self.current.frame.destroy()
 
@@ -340,6 +351,8 @@ class mainMenu:
 
 		self.app = app
 		self.master = master
+
+		self.master.bind_all('<Escape>',lambda event: self.app.ChangeState( mainMenu ))
 
 		self.frame = Frame( self.master, bg='chartreuse4' )
 		self.frame.pack( fill='both',expand=True, )
