@@ -113,6 +113,9 @@ class App:
 
 		self.tutorial = False
 
+		self.warningManager = myWarningManager( self.master )
+		self.warningManager.pack(side='bottom',fill='x')
+
 		if machinery.FirstTime():
 			self.current = Welcome( self.master,self )
 			self.tutorial = True
@@ -123,9 +126,6 @@ class App:
 		self.data = None
 		self.password = None
 		self.oldClip = copypaste.paste()
-
-		self.warningManager = myWarningManager( self.master )
-		self.warningManager.pack(side='bottom',fill='x')
 
 		self.master.bind_all('<Command-w>',self.Quit)
 
@@ -217,7 +217,7 @@ class Welcome:
 		self.pass_in2.bind('<Return>',self.Save)
 
 		self.save_button = myButton( self.frame, text='SAVE', command=self.Save )
-		self.save_button.pack()
+		self.save_button.pack(fill='x')
 
 
 	def Save(self, event=None):
@@ -283,7 +283,7 @@ class login:
 
 		if self.app.tutorial:
 
-			tkMessageBox.showinfo('Tutorial','Typing automatically jumps to the password box, so you can type in your password as soon as you open the app!')
+			self.app.warningManager.displayWarning(name='hint',text='Hint: Typing automatically jumps to the\npassword box, so you can type in your\npassword as soon as you open the app!')
 
 		return
 
@@ -381,7 +381,7 @@ class mainMenu:
 		self.frame.bind_all('u',self.FUpdate)
 
 		if self.app.tutorial:
-			tkMessageBox.showinfo('Tutorial','Typing g, n, or u will jump you to the Get, New, and Update menus respectively.')
+			self.app.warningManager.displayWarning(name='hint',text='Hint: Typing g, n, or u will jump you to the Get,\nNew, and Update menus respectively.')
 
 		return
 
@@ -451,8 +451,6 @@ class New:
 		self.backMainMenu = myButton( self.frame, text='MAIN MENU', command=self.goMainMenu )
 		self.backMainMenu.pack(fill='x')
 
-		if self.app.tutorial:
-			tkMessageBox.showinfo('Tutorial','Pressing the \'a\' button in the right part of the password field shows the password; pressing it a second time hides it again. If you\'re alone, this can be useful to make sure you got the password right!')
 
 	def toggleShow(self):
 
@@ -522,8 +520,6 @@ class Update:
 		self.save_button = myButton( self.frame, text='SAVE', command=self.Save )
 		self.save_button.pack(side='bottom',fill='x')
 
-		if self.app.tutorial:
-			tkMessageBox.showinfo('Tutorial','Like in the \'Get\' menu, typing some letters will filter the list shown. When you\'ve found the password you want to update, click on it, and type the new password into the \'PASSWORD\' box.')
 
 	def toggleShow(self):
 
@@ -593,7 +589,7 @@ class Get:
 		self.frame.bind_all('<Return>',self.onReturn)
 
 		if self.app.tutorial:
-			tkMessageBox.showinfo('Tutorial','Select a password to get by clicking on it. The password will automatically be copied to the clipboard, so that it never has to be shown on the screen. The blue box around the name signifies that it is on the clipboard. Hint: try typing some letters to filter by name, if you have a long list!')
+			self.app.warningManager.displayWarning(name='hint',text='Clicking on a name copies that password\nto the clipboard.\nHint: try typing some letters to filter by name,\nif you have a long list!')
 
 	def onReturn(self, event):
 
