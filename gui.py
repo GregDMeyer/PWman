@@ -125,7 +125,14 @@ class App:
 
 		self.data = None
 		self.password = None
-		self.oldClip = copypaste.paste()
+
+		# PyObjC can't handle copy/paste if there's nothing on the clipboard
+		try:
+			self.oldClip = copypaste.paste()
+			pass
+		except AttributeError:
+			self.oldClip = ''
+			pass
 
 		self.master.bind_all('<Command-w>',self.Quit)
 
