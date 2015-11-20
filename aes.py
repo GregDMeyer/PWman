@@ -1,10 +1,11 @@
 from Crypto.Cipher import AES
 from Crypto import Random
-import hashlib
+from Crypto.Hash import SHA256
+from cPickle import loads
 import base64
 import string
 
-KEY_STRETCH = 50000
+KEY_STRETCH = 25000
 
 class AESError(Exception):
 
@@ -15,12 +16,9 @@ class AESError(Exception):
 		pass
 
 
-
-
 def pad(string, block_size=16):
 
 	n_pad_chars = block_size - len(string) % block_size
-
 	padding = n_pad_chars * chr(n_pad_chars)
 
 	return string + padding 
@@ -40,7 +38,9 @@ def encrypt(string,password):
 	string = pad( string )
 
 	for i in xrange( KEY_STRETCH - 1 ):
-		password = hashlib.md5( salt + password ).digest()
+		h = SHA256.new()
+		h.update( salt + password )
+		password = h.digest()
 		pass
 
 	iv = Random.new().read( AES.block_size )
@@ -55,7 +55,9 @@ def decrypt(encoded,password):
 	salt = encoded [:4]
 
 	for i in xrange( KEY_STRETCH - 1 ):
-		password = hashlib.md5( salt + password ).digest()
+		h = SHA256.new()
+		h.update( salt + password )
+		password = h.digest()
 		pass
 
 	iv = encoded[4:20]
@@ -70,10 +72,10 @@ def decrypt(encoded,password):
 
 		return ''
 
-	decoded = unpad( decoded )
-
-	if decoded == '' or not decoded[0] in string.printable :
-
+	try:
+		decoded = unpad( decoded )
+		loads(decoded)
+	except:
 		raise AESError('Bad decrypt! Corrupt data or bad password.')
 		return None
 
@@ -105,7 +107,33 @@ def encryptToFile( plaintext, outfile_path, password ):
 	return 0
 
 
-def oldDecryptFromFile(infile,password):
-        p = subprocess.Popen(['openssl','aes-256-cbc','-d','-in',infile,'-pass','stdin'], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-        out = p.communicate(password)[0]
-        return out
+def checkPass(password, hashfile):
+
+	hashed = hashfile.read()
+
+	salt = hashed[:4]
+
+	hashed = hashed[4:]
+
+	for i in xrange( KEY_STRETCH + 1 ):
+		h = SHA256.new()
+		h.update( salt + password )
+		password = h.digest()
+		pass
+
+	return hashed == password
+
+
+def savePass(password,hashfile):
+
+	salt = Random.new().read( 4 )
+
+	for i in xrange( KEY_STRETCH + 1 ):
+		h = SHA256.new()
+		h.update( salt + password )
+		password = h.digest()
+		pass
+
+	hashfile.write( salt + password )
+
+	return

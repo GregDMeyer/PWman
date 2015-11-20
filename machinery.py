@@ -1,57 +1,31 @@
-#! /usr/bin/env python
 
 import os
-import sys
-import time
 import errno
-import hashlib
-from getpass import getpass
-from os.path import expanduser, isfile
+from os.path import isfile
 import aes # make sure that aes and copypaste are in the right spot!
 import copypaste
 import cPickle
-from Tkinter import *
-from Crypto import Random
 
 from Cocoa import NSHomeDirectory
 home = NSHomeDirectory()
 
 
-KEY_STRETCH = 50000
-
-
 def FirstTime():
-
 	return not isfile(home+'/.pwman_test/passwd')
 
 def CheckPassword( password ):
-
 	hashfile = open(home+'/.pwman_test/passwd','r')
-
-	hashed = hashfile.read()
-
-	salt = hashed[:4]
-
-	hashed = hashed[4:]
-
-	for i in xrange( KEY_STRETCH + 1 ):
-		password = hashlib.md5( salt + password ).digest()
-		pass
-
-	return hashed == password
+	result = aes.checkPass(password, hashfile)
+	hashfile.close()
+	return result
 
 def SaveMasterPass( password ):
 
 	check_or_make_dir( home+'/.pwman_test/' )
 	passout = open(home+'/.pwman_test/passwd','w')
 
-	salt = Random.new().read( 4 )
+	aes.savePass(password,passout)
 
-	for i in xrange( KEY_STRETCH + 1 ):
-		password = hashlib.md5( salt + password ).digest()
-		pass
-
-	passout.write( salt + password )
 	passout.close()
 	return
 
@@ -81,7 +55,7 @@ def GetData( password ):
 
 	return data
 
-def CopyPass( password, time ):
+def CopyPass( password ):
 	copypaste.copy( password )
 	pass
 
