@@ -1,3 +1,9 @@
+'''
+Some small wrappers for the copy/paste functions for OS X.
+
+This is I think the only part that would have to be modified to get PWman to run on linux
+'''
+
 from AppKit import NSPasteboard, NSArray, NSStringPboardType
 
 pb = NSPasteboard.generalPasteboard()
@@ -10,15 +16,3 @@ def copy(data):
      a = NSArray.arrayWithObject_( data )
      pb.writeObjects_(a)
      return
-
-# put data on clipboard for only 20 seconds, then revert to whatever
-# used to be on the clipboard
-def tempcopy(data):
-	oldclip = paste()
-	copy(data)
-	if os.fork():
-		sys.exit()
-
-	time.sleep(20)
-
-	copy(oldclip)

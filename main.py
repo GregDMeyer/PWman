@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+'''
+Launch application, put it in the correct place on the screen, etc.
+'''
+
 from Tkinter import *
 from gui import App, About
 import atexit

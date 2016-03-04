@@ -1,3 +1,9 @@
+
+'''
+Some custom classes I wrote to make Tk buttons, lists etc. that look pretty. Mostly changes in font, colors, style, etc. 
+Notably different stuff is for example the button class below, which actually is subclassed from Tkinter's Text object.
+'''
+
 import Tkinter as tk
 import tkFont
 import string
@@ -923,38 +929,4 @@ class myWarningManager( tk.Frame, object ):
 		self.pack_kwargs = kwargs
 
 		self.packing = True
-
-#OLD RELICS - NOT USED
-
-
-class myListBox( ScrollableFrame, object ):
-
-	def __init__(self,master,):
-
-		self.master = master
-
-		ScrollableFrame.__init__(self, self.master)
-
-		self.config(height=200)
-
-	def SetList(self,buttonDict):
-
-		self.buttonDict = buttonDict
-		self.refreshButtons()
-
-		pass
-
-	def refreshButtons(self):
-
-		for child in self.frame.winfo_children():
-			child.destroy()
-			pass
-
-		buttons = []
-
-		for buttonName in self.buttonDict.keys():
-
-			buttons.append( myButton( self.frame, text=buttonName, command=self.buttonDict[ buttonName ] ) )
-			buttons[-1].pack()
-			pass
 

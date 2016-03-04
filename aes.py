@@ -1,3 +1,7 @@
+'''
+Functions to use AES to encrypt/decrypt a string, and maybe save/load the result from a file.
+'''
+
 from Crypto.Cipher import AES
 from Crypto import Random
 from Crypto.Hash import SHA256

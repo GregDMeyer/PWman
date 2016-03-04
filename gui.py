@@ -1,11 +1,12 @@
+'''
+Classes for the GUI. Pretty self explanatory.
+'''
+
 from Tkinter import *
-import tkMessageBox
 from myTkObjects import *
-import tkFont
 import machinery
 import copypaste
 import string
-import time
 import webbrowser
 import tkHyperlinkManager
 
@@ -625,7 +626,8 @@ class Get:
 			self.app.warningManager.displayWarning(name='noSelection',text='Select a password to get!')
 			return
 
-		machinery.CopyPass( self.app.data[ self.list.getSelection() ], 20 )
+		machinery.CopyPass( self.app.data[ self.list.getSelection() ] )
+		self.app.warningManager.displayWarning(name='copied',text='Password for:\n"'+self.list.getSelection()+'"\ncopied to clipboard.')
 
 		#self.app.ChangeState( mainMenu )
 

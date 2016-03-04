@@ -1,8 +1,11 @@
+'''
+Functions for checking/saving the master password, writing out the data, etc.
+'''
 
 import os
 import errno
 from os.path import isfile
-import aes # make sure that aes and copypaste are in the right spot!
+import aes
 import copypaste
 import cPickle
 
