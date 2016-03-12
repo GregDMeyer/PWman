@@ -1,47 +1,33 @@
 '''
-Functions to use AES to encrypt/decrypt a string, and maybe save/load the result from a file.
+Functions to use AES to encrypt/decrypt a string, and save/check master password with SHA-256 hash.
 '''
 
 from Crypto.Cipher import AES
 from Crypto import Random
 from Crypto.Hash import SHA256
 from cPickle import loads
-import base64
 import string
+import os
+
+from Cocoa import NSHomeDirectory
+home = NSHomeDirectory()
 
 KEY_STRETCH = 25000
+HASH_EXTRA_STRETCH = 10
 
-class AESError(Exception):
-
+class EncryptionError(Exception):
 	def __init__(self, msg):
-
 		self.msg = msg
 		print self.msg
 		pass
 
 
-def pad(string, block_size=16):
-
-	n_pad_chars = block_size - len(string) % block_size
-	padding = n_pad_chars * chr(n_pad_chars)
-
-	return string + padding 
-
-
-def unpad(string):
-
-	n_pad_chars = ord( string[-1] )
-
-	return string[0:-n_pad_chars]
-
-
-def encrypt(string,password):
+def encrypt(plaintext,password):
 
 	salt = Random.new().read( 4 )
+	plaintext = _pad( plaintext )
 
-	string = pad( string )
-
-	for i in xrange( KEY_STRETCH - 1 ):
+	for i in xrange( KEY_STRETCH ):
 		h = SHA256.new()
 		h.update( salt + password )
 		password = h.digest()
@@ -49,95 +35,80 @@ def encrypt(string,password):
 
 	iv = Random.new().read( AES.block_size )
 
-	cipher = AES.new( password, AES.MODE_CBC, iv )
+	cipher = AES.new( password, AES.MODE_CBC, iv ) # look into maybe switching to CTR mode for fun?
 
-	return salt + iv + cipher.encrypt( string )
+	return salt + iv + cipher.encrypt( plaintext )
 
 
-def decrypt(encoded,password):
+def decrypt(ciphertext,password):
 
-	salt = encoded [:4]
+	salt = ciphertext[:4]
 
-	for i in xrange( KEY_STRETCH - 1 ):
+	for i in xrange( KEY_STRETCH ):
 		h = SHA256.new()
 		h.update( salt + password )
 		password = h.digest()
 		pass
 
-	iv = encoded[4:20]
-
-	ciphertext = encoded[20:]
+	iv = ciphertext[4:20]
+	ciphertext = ciphertext[20:]
 
 	cipher = AES.new( password, AES.MODE_CBC, iv )
-
-	decoded = cipher.decrypt( ciphertext )
-
-	if decoded == '\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10':
-
-		return ''
+	plaintext = cipher.decrypt( ciphertext )
 
 	try:
-		decoded = unpad( decoded )
-		loads(decoded)
-	except:
-		raise AESError('Bad decrypt! Corrupt data or bad password.')
-		return None
+		plaintext = _unpad( plaintext )
+		loads(plaintext) # check that it is valid data, don't do anything with it
+	except EOFError:
+		return ''
+	except cPickle.UnpicklingError, EncryptionError:
+		raise EncryptionError('Bad decrypt! Corrupt data or bad password.')
 
-	return decoded
-
-
-def decryptFromFile( infile_path, password ):
-
-	ciphertext = ''
-
-	encfile = open( infile_path, 'r' )
-
-	for line in encfile.readlines():
-		ciphertext += line
-		pass
-
-	return decrypt( ciphertext, password )
+	return plaintext
 
 
-def encryptToFile( plaintext, outfile_path, password ):
+def check_pass(password):
 
-	outfile = open( outfile_path, 'w' )
-
-	ciphertext = encrypt( plaintext, password )
-
-	outfile.write( ciphertext )
-	outfile.close()
-
-	return 0
-
-
-def checkPass(password, hashfile):
-
-	hashed = hashfile.read()
+	with open(home+'/.pwman_test/passwd','r') as f:
+		hashed = f.read()
 
 	salt = hashed[:4]
-
 	hashed = hashed[4:]
 
-	for i in xrange( KEY_STRETCH + 1 ):
-		h = SHA256.new()
-		h.update( salt + password )
-		password = h.digest()
-		pass
-
-	return hashed == password
+	return hashed == _get_hash(salt, password)
 
 
-def savePass(password,hashfile):
+def save_master_pass(password):
 
 	salt = Random.new().read( 4 )
 
-	for i in xrange( KEY_STRETCH + 1 ):
+	hashed = _get_hash(salt,password)
+
+	with open(home+'/.pwman_test/passwd','w') as hashfile:
+		hashfile.write( salt + hashed )
+
+	return
+
+
+def _pad(string, block_size=16):
+	n_pad_chars = block_size - len(string) % block_size
+	padding = n_pad_chars * chr(n_pad_chars)
+	return string + padding 
+
+
+def _unpad(string):
+	n_pad_chars = ord( string[-1] )
+	if not all([c==string[-1] for c in string[-n_pad_chars:]]):
+		raise EncryptionError('Bad padding.')
+	return string[0:-n_pad_chars]
+
+
+def _get_hash(salt, password):
+
+	for i in xrange( KEY_STRETCH + 10 ):
 		h = SHA256.new()
 		h.update( salt + password )
 		password = h.digest()
-		pass
 
-	hashfile.write( salt + password )
+	return password
 
-	return

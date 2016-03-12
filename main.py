@@ -17,7 +17,7 @@ def showAbout():
     top = Toplevel()
     top.title('About PWman')
 
-    about = About( top )
+    About( top )
 
     return
 
@@ -31,21 +31,16 @@ app = App( root )
 root.createcommand('exit', app.Quit)
 
 #make my screen dimensions work
-w = 320 #The value of the width
-h = 600 #The value of the height of the window
-
+w = 320
+h = 600
 # get screen width and height
-ws = root.winfo_screenwidth() #This value is the width of the screen
-hs = root.winfo_screenheight() #This is the height of the screen
+ws = root.winfo_screenwidth() 
+hs = root.winfo_screenheight() 
 
-# calculate position x, y
 x = (ws/2) - (w/2)
 y = (hs/2) - (h/2)
 
-#This is responsible for setting the dimensions of the screen and where it is
-#placed
 root.geometry('+%d+%d' % (x, y))
-
 
 root.mainloop()
 

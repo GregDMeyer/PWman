@@ -12,7 +12,7 @@ FONT_FAMILY = 'Avenir Light'
 
 class myButton( tk.Text ):
 
-	def __init__(self,master,text='',command=None,color='green',disabled=False,*args,**kwargs):
+	def __init__(self,master,text='',command=None,color='green',disabled=False,font_size=30,*args,**kwargs):
 
 		tk.Text.__init__(self,master,*args,**kwargs)
 
@@ -26,6 +26,8 @@ class myButton( tk.Text ):
 			self.bg = 'dark green'
 			self.fg = 'papaya whip'
 			self.activeColor = 'forest green'
+			self.disabledFg = 'papaya whip'
+			self.disabledBg = 'dark sea green'
 			pass
 		elif color == 'gray':
 			self.bg = 'gray30'
@@ -50,7 +52,7 @@ class myButton( tk.Text ):
 			pass
 
 		self.config(
-			font=(FONT_FAMILY,30),
+			font=(FONT_FAMILY,font_size),
 			state='disabled',
 			cursor='arrow',
 			height=1,
@@ -449,6 +451,20 @@ class myShowHidePassEntry( tk.Frame, object ):
 		else:
 			return self.entry.get(*args,**kwargs)
 			pass
+
+
+	def set(self, val):
+
+		self.entry.delete(0,tk.END)
+		self.entry.insert(tk.END,val)
+		self.entry.config(fg='navy')
+
+		if not self.show:
+			self.entry.config(show='*')
+
+		self.empty = False
+		return
+
 
 	def bind(self,*args,**kwargs):
 
@@ -851,7 +867,7 @@ class myWarningManager( tk.Frame, object ):
 		self.warnings = {}
 
 	# show a new warning
-	def displayWarning(self, name, text):
+	def display_warning(self, name, text):
 
 		# if this one already exists, it is cleared and replaced.
 		if name in self.warnings.keys():
@@ -865,7 +881,7 @@ class myWarningManager( tk.Frame, object ):
 		self.warnings[ name ].pack(fill='x')
 
 		if not self.winfo_ismapped():
-			self._myPack()
+			self._pack()
 			pass
 
 	# clear warning with name 'name'
@@ -886,10 +902,9 @@ class myWarningManager( tk.Frame, object ):
 
 
 	# try to clear warning with name 'name', if it doesn't exist, that's fine.
-	def tryClear(self, name):
+	def try_clear(self, name):
 
 		if not name in self.warnings.keys():
-
 			return
 
 		self.warnings[ name ].pack_forget()
@@ -903,7 +918,7 @@ class myWarningManager( tk.Frame, object ):
 
 
 	# clear all warnings present.
-	def clearAll(self):
+	def clear_all(self):
 
 		for child in self.winfo_children():
 			child.pack_forget()
@@ -913,8 +928,8 @@ class myWarningManager( tk.Frame, object ):
 
 		self.pack_forget()
 
-
-	def _myPack(self):
+	# this one packs individual warnings
+	def _pack(self):
 
 		if self.packing:
 			super(myWarningManager,self).pack(*self.pack_args,**self.pack_kwargs)
@@ -922,11 +937,12 @@ class myWarningManager( tk.Frame, object ):
 
 		return
 
-
+	# this is to "pack" the larger warning manager class
 	def pack(self,*args,**kwargs):
 
 		self.pack_args = args
 		self.pack_kwargs = kwargs
 
 		self.packing = True
+		return
 
