@@ -12,937 +12,733 @@ FONT_FAMILY = 'Avenir Light'
 
 class myButton( tk.Text ):
 
-	def __init__(self,master,text='',command=None,color='green',disabled=False,font_size=30,*args,**kwargs):
-
-		tk.Text.__init__(self,master,*args,**kwargs)
-
-		self.tag_configure("center", justify='center')
-		self.insert(tk.END,text,"center")
-		self.command = command
-		self.disabled = disabled
-		self.state = 'inactive'
-
-		if color == 'green':
-			self.bg = 'dark green'
-			self.fg = 'papaya whip'
-			self.activeColor = 'forest green'
-			self.disabledFg = 'papaya whip'
-			self.disabledBg = 'dark sea green'
-			pass
-		elif color == 'gray':
-			self.bg = 'gray30'
-			self.fg = 'papaya whip'
-			self.activeColor = 'gray45'
-			self.highlight = 'light sky blue'
-			self.disabledFg = 'slate gray'
-			self.disabledBg = 'gray20'
-			pass
-		elif color == 'light gray':
-			self.bg = 'gray70'
-			self.fg = 'dark slate gray'
-			self.activeColor = 'gray85'
-			self.disabledFg = 'slate gray'
-			self.disabledBg = 'gray78'
-		elif color == 'dark blue':
-			self.bg = 'navy'
-			self.fg = 'light sky blue'
-			self.activeColor = 'RoyalBlue4'
-		else:
-			raise Exception(color+' is not a valid color.')
-			pass
-
-		self.config(
-			font=(FONT_FAMILY,font_size),
-			state='disabled',
-			cursor='arrow',
-			height=1,
-			relief='flat',
-			bd=1,
-			width=20,
-			pady=5,
-			highlightthickness=2,
-			highlightcolor=self.bg,
-			highlightbackground=self.bg,
-			)
-		if self.disabled:
-			self.config(
-				bg=self.disabledBg,
-				fg=self.disabledFg,
-				)
-		else:
-			self.config(
-				bg=self.bg,
-				fg=self.fg,
-				)
-		self.config(*args,**kwargs)
-
-		if not self.disabled:
-			self.bind('<Enter>',self._MouseIn)
-			self.bind('<Leave>',self._MouseOut)
-			self.bind('<Button-1>',self._MouseDown)
-			self.bind('<ButtonRelease-1>',self._MouseUp)
-			pass
-
-		self.mouse = {
-			'in':False,
-			'down':False
-		}
-
-		self.active = False
-
-	def _MouseIn(self,event):
-
-		#print 'Mouse in.'
-		self.mouse['in'] = True
-		self.config(bg=self.activeColor,)
-		if not self.active:
-			self.config(highlightcolor=self.activeColor,highlightbackground=self.activeColor)
-		if self.state == 'clicking':
-			self.config(relief='sunken')
-		pass
-
-	def _MouseOut(self,event):
-
-		#print 'Mouse out.'
-		self.mouse['in'] = False
-		self.config(relief='flat')
-		self.config(bg=self.bg,)
-		if not self.active:
-			self.config(highlightcolor=self.bg,highlightbackground=self.bg)
-		pass
-
-	def _MouseDown(self,event):
-
-		#print 'Mouse down.'
-		self.mouse['down'] = True
-		if self.mouse['in']:
-			self.config( relief='sunken' )
-			self.state = 'clicking'
-			pass
-		pass
+    def __init__(self,
+                 master,
+                 text='',
+                 command=None,
+                 color='green',
+                 disabled=False,
+                 font_size=30,
+                 *args,
+                 **kwargs):
+
+        tk.Text.__init__(self,master,*args,**kwargs)
+
+        self.tag_configure("center", justify='center')
+        self.insert(tk.END,text,"center")
+        self.command = command
+        self.disabled = disabled
+        self.state = 'inactive'
+
+        if color == 'green':
+            self.bg = 'dark green'
+            self.fg = 'papaya whip'
+            self.active_color = 'forest green'
+            self.disabled_fg = 'papaya whip'
+            self.disabled_bg = 'dark sea green'
+
+        elif color == 'gray':
+            self.bg = 'gray30'
+            self.fg = 'papaya whip'
+            self.active_color = 'gray45'
+            self.highlight = 'light sky blue'
+            self.disabled_fg = 'slate gray'
+            self.disabled_bg = 'gray20'
+
+        elif color == 'light gray':
+            self.bg = 'gray70'
+            self.fg = 'dark slate gray'
+            self.active_color = 'gray85'
+            self.disabled_fg = 'slate gray'
+            self.disabled_bg = 'gray78'
+
+        elif color == 'dark blue':
+            self.bg = 'navy'
+            self.fg = 'light sky blue'
+            self.active_color = 'RoyalBlue4'
+
+        else:
+            raise Exception(color+' is not a valid color.')
+
+        self.config(
+            font=(FONT_FAMILY,font_size),
+            state='disabled', # this doesn't mean the button is disabled. it is the text object
+            cursor='arrow',
+            height=1,
+            relief='flat',
+            bd=1,
+            width=20,
+            pady=5,
+            highlightthickness=2,
+            highlightcolor=self.bg,
+            highlightbackground=self.bg,
+            )
+        if self.disabled:
+            self.config(
+                bg=self.disabled_bg,
+                fg=self.disabled_fg,
+                )
+        else:
+            self.config(
+                bg=self.bg,
+                fg=self.fg,
+                )
+        self.config(*args,**kwargs)
+
+        if not self.disabled:
+            self.bind('<Enter>',self._mouse_in)
+            self.bind('<Leave>',self._mouse_out)
+            self.bind('<Button-1>',self._mouse_down)
+            self.bind('<ButtonRelease-1>',self._mouse_up)
+            pass
+
+        self.mouse = {
+            'in':False,
+            'down':False
+        }
+
+        self.active = False
+
+    def _mouse_in(self,event):
+
+        #print 'Mouse in.'
+        self.mouse['in'] = True
+        self.config(bg=self.active_color,)
+        if not self.active:
+            self.config(highlightcolor=self.active_color,highlightbackground=self.active_color)
+        if self.state == 'clicking':
+            self.config(relief='sunken')
+        pass
+
+    def _mouse_out(self,event):
+
+        #print 'Mouse out.'
+        self.mouse['in'] = False
+        self.config(relief='flat')
+        self.config(bg=self.bg,)
+        if not self.active:
+            self.config(highlightcolor=self.bg,highlightbackground=self.bg)
+        pass
+
+    def _mouse_down(self,event):
+
+        #print 'Mouse down.'
+        self.mouse['down'] = True
+        if self.mouse['in']:
+            self.config( relief='sunken' )
+            self.state = 'clicking'
+            pass
+        pass
+
+    def _mouse_up(self,event):
 
-	def _MouseUp(self,event):
+        #print 'Mouse up.'
+        self.mouse['down'] = False
+        self.config(relief='flat')
+        if self.mouse['in']:
+            self.state = 'active'
+            pass
+        else:
+            self.state = 'inactive'
+            pass
+        if self.mouse['in'] and self.command:
+            self.command( event )
+            pass
+        pass
 
-		#print 'Mouse up.'
-		self.mouse['down'] = False
-		self.config(relief='flat')
-		if self.mouse['in']:
-			self.state = 'active'
-			pass
-		else:
-			self.state = 'inactive'
-			pass
-		if self.mouse['in'] and self.command:
-			self.command( event )
-			pass
-		pass
+    def make_active(self):
 
-	def makeActive(self):
+        self.active = True
 
-		self.active = True
+        self.config(highlightcolor=self.highlight)
+        self.config(highlightbackground=self.highlight)
+        return 
 
-		self.config(highlightcolor=self.highlight)
-		self.config(highlightbackground=self.highlight)
-		pass
+    def make_inactive(self):
 
-	def makeInactive(self):
+        self.active = False
 
-		self.active = False
+        self.config(highlightcolor=self.bg)
+        self.config(highlightbackground=self.bg)
+        return
 
-		self.config(highlightcolor=self.bg)
-		self.config(highlightbackground=self.bg)
+    def disable(self):
 
-		pass
+        self.config(
+                bg=self.disabled_bg,
+                fg=self.disabled_fg,
+                )
 
-	def disable(self):
+        self.unbind('<Enter>',)
+        self.unbind('<Leave>',)
+        self.unbind('<Button-1>',)
+        self.unbind('<ButtonRelease-1>',)
 
-		self.config(
-				bg=self.disabledBg,
-				fg=self.disabledFg,
-				)
+    def enable(self):
 
-		self.unbind('<Enter>',)
-		self.unbind('<Leave>',)
-		self.unbind('<Button-1>',)
-		self.unbind('<ButtonRelease-1>',)
+        self.config(
+                bg=self.bg,
+                fg=self.fg,
+                )
 
-	def enable(self):
+        self.bind('<Enter>',self._mouse_in)
+        self.bind('<Leave>',self._mouse_out)
+        self.bind('<Button-1>',self._mouse_down)
+        self.bind('<ButtonRelease-1>',self._mouse_up)
 
-		self.config(
-				bg=self.bg,
-				fg=self.fg,
-				)
+    def replace_text(self, newtext):
 
-		self.bind('<Enter>',self._MouseIn)
-		self.bind('<Leave>',self._MouseOut)
-		self.bind('<Button-1>',self._MouseDown)
-		self.bind('<ButtonRelease-1>',self._MouseUp)
+        self.config(state='normal')
+        self.delete(1.0,tk.END)
+        self.insert(tk.END,newtext,"center")
+        self.config(state='disabled')
 
-	def changeText(self, newtext):
 
-		self.config(state='normal')
-		self.delete(1.0,tk.END)
-		self.insert(tk.END,newtext,"center")
-		self.config(state='disabled')
+class myEntry( tk.Frame, object ):
 
+    def __init__(self,master,text='',password=False,showable=False,*args,**kwargs):
 
+        tk.Frame.__init__(self,master,*args,**kwargs)
 
-class myEntry( tk.Entry, object ):
+        self.password = password
+        self.showable = showable
+        if showable and not password:
+            raise Exception('Showable entry, but not a password? wat')
+        self.show = False
 
-	def __init__(self,master,text='',isPassword=False,*args,**kwargs):
+        self.entry = tk.Entry(self)
 
-		tk.Entry.__init__(self,master,*args,**kwargs)
+        self.bg='light sky blue'
 
-		self.bg='light sky blue'
+        self.entry.config(
+            font=(FONT_FAMILY,30),
+            width=18 if showable else 20,
+            relief='flat',
+            bg=self.bg,
+            highlightthickness=2,
+            highlightcolor=self.bg,
+            highlightbackground=self.bg,
+            fg='dodger blue',
+            )
 
-		self.config(
-			font=(FONT_FAMILY,30),
-			width=20,
-			relief='flat',
-			bg='light sky blue',
-			highlightthickness=2,
-			highlightcolor=self.bg,
-			highlightbackground=self.bg,
-			fg='dodger blue',
-			)
-		self.config(
-			*args,
-			**kwargs
-			)
+        self.entry.pack(ipady=5,side='left' if showable else 'top',fill=tk.NONE if showable else 'x')
 
-		self.text = text
-		self.empty = True
-		self.insert(tk.END,self.text)
+        if self.showable: # put the button to toggle show or not
+            self.togglebutton = myButton(self,width='2',text='a',command=self._toggle_show,color='dark blue')
+            self.togglebutton.pack(side='right',fill='y')
 
-		self.bind('<FocusIn>', self.FocusIn )
-		self.bind('<FocusOut>', self.FocusOut )
+        self.text = text
+        self.empty = True
+        self.entry.insert(tk.END,self.text)
 
-	def FocusIn( self, event ):
+        self.entry.bind('<FocusIn>', self._focus_in )
+        self.entry.bind('<FocusOut>', self._focus_out )
 
-		if self.empty:
-			self.delete(0,tk.END)
-			self.config(fg='navy')
-			self.empty = False
+        # these are set with bind later
+        self.focus_in_cmd = lambda: None
+        self.focus_out_cmd = lambda: None
+        return
 
-		pass
 
-	def FocusOut( self, event ):
+    def _focus_in( self, event ):
 
-		if not self.get():
+        self.focus_in_cmd()
 
-			self.empty = True
-			self.config(fg='dodger blue')
-			self.insert(tk.END,self.text)
+        if self.empty:
+            self.entry.delete(0,tk.END)
+            self.entry.config(fg='navy')
+            if self.password and not self.show:
+                self.entry.config(show='*')
+                pass
+            self.empty = False
 
-		else:
+        return
 
-			self.empty = False
-			pass
 
-	# FUNCTIONS FOR EXTERNAL USE
+    def _focus_out( self, event ):
 
-	def pack(self,*args,**kwargs):
+        self.focus_out_cmd()
 
-		if not 'ipady' in kwargs.keys():
-			kwargs['ipady'] = 5
-			pass
+        if not self.get():
+            self.empty = True
+            self.entry.config(show='',fg='dodger blue')
+            self.entry.insert(tk.END,self.text)
 
-		super(myEntry,self).pack(*args,**kwargs)
-		pass
+        else:
+            self.empty = False
+        
+        return
 
-	def get(self,*args,**kwargs):
 
-		if self.empty:
-			return ''
-		else:
-			return super(myEntry,self).get(*args,**kwargs)
-			pass
+    # this should only be called if password and showable are both true
+    def _toggle_show(self,event):
 
+        if self.togglebutton.get(1.0,tk.END).strip() == 'a':
+            self.entry.config(show='')
+            self.show = True
+            self.togglebutton.replace_text('*')
 
+        else:
+            if not self.empty:
+                self.entry.config(show='*')
+            self.show = False
+            self.togglebutton.replace_text('a')
+        return
 
-class myPassEntry( tk.Entry, object ):
 
-	def __init__(self,master,text='',showable=False,*args,**kwargs):
+    def get(self,*args,**kwargs):
 
-		tk.Entry.__init__(self,master,*args,**kwargs)
+        if self.empty:
+            return ''
+        else:
+            return self.entry.get(*args,**kwargs)
+            pass
 
-		self.bg='light sky blue'
 
-		self.config(
-			font=(FONT_FAMILY,30),
-			width=20,
-			relief='flat',
-			bg='light sky blue',
-			highlightthickness=2,
-			highlightcolor=self.bg,
-			highlightbackground=self.bg,
-			fg='dodger blue',
-			)
-		self.config(
-			*args,
-			**kwargs
-			)
+    def set(self, val):
 
-		self.text = text
-		self.empty = True
-		self.insert(tk.END,self.text)
+        self.entry.delete(0,tk.END)
+        self.entry.insert(tk.END,val)
+        self.entry.config(fg='navy')
 
-		self.showable = showable
+        if self.password and not self.show:
+            self.entry.config(show='*')
 
-		self.bind('<FocusIn>', self.FocusIn )
-		self.bind('<FocusOut>', self.FocusOut )
+        self.empty = False
+        return
 
-	def FocusIn( self, event=None ):
 
-		if self.empty:
-			self.delete(0,tk.END)
-			self.config(fg='navy')
-			self.config(show='*')
-			self.empty = False
+    def bind(self,*args,**kwargs):
 
+        if '<FocusIn>' in args or '<FocusOut>' in args:
+            self._bind(*args,**kwargs)
+        else:
+            self.entry.bind(*args,**kwargs)
+        return
 
-		pass
 
-	def FocusOut( self, event ):
+    def _bind(self, *args, **kwargs):
 
-		if not self.get():
+        if args[0] == '<FocusIn>':
+            self.focus_in_cmd = args[1]
+        elif args[0] == '<FocusOut>':
+            self.focus_out_cmd = args[1]
+        return
 
-			self.empty = True
-			self.config(show='',fg='dodger blue')
-			self.insert(tk.END,self.text)
 
-		else:
+    def focus_insert(self, char):
 
-			self.empty = False
-			pass
+        self.entry.focus_set()
 
-	# FUNCTIONS FOR EXTERNAL USE
+        self.entry.delete(0,tk.END)
+        self.entry.config(fg='navy')
 
-	def pack(self,*args,**kwargs):
+        if self.password and not self.show:
+            self.entry.config(show='*')
 
-		if not 'ipady' in kwargs.keys():
-			kwargs['ipady'] = 5
-			pass
+        self.empty = False
+        self.entry.insert(tk.END, char)
 
-		super(myPassEntry,self).pack(*args,**kwargs)
-		pass
+        self.entry.bind('<FocusIn>', self._focus_in )
 
-	def get(self,*args,**kwargs):
+        return
 
-		if self.empty:
-			return ''
-		else:
-			return super(myPassEntry,self).get(*args,**kwargs)
-			pass
 
-
-	def focusInsert(self, char):
-
-		self.unbind('<FocusIn>')
-
-		self.focus_set()
-
-		self.delete(0,tk.END)
-		self.config(fg='navy')
-		self.config(show='*')
-		self.empty = False
-
-		self.insert(tk.END, char)
-
-		self.bind('<FocusIn>', self.FocusIn )
-
-		return
-
-
-
-class myShowHidePassEntry( tk.Frame, object ):
-
-	def __init__(self,master,text='',showable=False,*args,**kwargs):
-
-		tk.Frame.__init__(self,master,*args,**kwargs)
-
-		self.entry = tk.Entry(self)
-
-		self.bg='light sky blue'
-
-		self.entry.config(
-			font=(FONT_FAMILY,30),
-			width=18,
-			relief='flat',
-			bg=self.bg,
-			highlightthickness=2,
-			highlightcolor=self.bg,
-			highlightbackground=self.bg,
-			fg='dodger blue',
-			)
-		self.entry.pack(ipady=5,side='left')
-
-		self.togglebutton = myButton(self,width='2',text='a',command=self.ToggleShow,color='dark blue')
-		self.togglebutton.pack(side='right',fill='y')
-
-		self.text = text
-		self.empty = True
-		self.entry.insert(tk.END,self.text)
-
-		self.show = False
-
-		self.showable = showable
-
-		self.entry.bind('<FocusIn>', self.FocusIn )
-		self.entry.bind('<FocusOut>', self.FocusOut )
-
-		self.focusInCommand = None
-		self.focusOutCommand = None
-
-	def FocusIn( self, event ):
-
-		if self.focusInCommand:
-			self.focusInCommand()
-			pass
-
-		if self.focusOutCommand:
-			self.focusOutCommand()
-			pass
-
-		if self.empty:
-			self.entry.delete(0,tk.END)
-			self.entry.config(fg='navy')
-			if not self.show:
-				self.entry.config(show='*')
-				pass
-			self.empty = False
-
-
-		pass
-
-	def FocusOut( self, event ):
-
-		if not self.get():
-
-			self.empty = True
-			self.entry.config(show='',fg='dodger blue')
-			self.entry.insert(tk.END,self.text)
-
-		else:
-
-			self.empty = False
-			pass
-
-	def ToggleShow(self,event):
-
-		if self.togglebutton.get(1.0,tk.END).strip() == 'a':
-			self.entry.config(show='')
-			self.show = True
-			self.togglebutton.changeText('*')
-			pass
-		else:
-			if not self.empty:
-				self.entry.config(show='*')
-				pass
-			self.show = False
-			self.togglebutton.changeText('a')
-			pass
-
-
-	def get(self,*args,**kwargs):
-
-		if self.empty:
-			return ''
-		else:
-			return self.entry.get(*args,**kwargs)
-			pass
-
-
-	def set(self, val):
-
-		self.entry.delete(0,tk.END)
-		self.entry.insert(tk.END,val)
-		self.entry.config(fg='navy')
-
-		if not self.show:
-			self.entry.config(show='*')
-
-		self.empty = False
-		return
-
-
-	def bind(self,*args,**kwargs):
-
-		if '<FocusIn>' in args or '<FocusOut>' in args:
-
-			self._myBind(*args,**kwargs)
-			return
-
-		self.entry.bind(*args,**kwargs)
-		pass
-
-	def _myBind(self, *args, **kwargs):
-
-		if args[0] == '<FocusIn>':
-			self.focusInCommand = args[1]
-			pass
-		elif args[0] == '<FocusOut>':
-			self.focusOutCommand = args[1]
-			pass
-		else:
-			raise Exception('Something\'s broken in _myBind in myShowHidePassEntry.')
+    def clear(self):
+        self.entry.delete(0,tk.END)
+        return
 
 
 class myTitle( tk.Text ):
 
-	def __init__(self,master,text='',**options):
+    def __init__(self,master,text='',**options):
 
-		tk.Text.__init__(self,master,**options)
+        tk.Text.__init__(self,master,**options)
 
-		self.tag_configure("center", justify='center')
-		self.insert(tk.END,text,"center")
+        self.tag_configure("center", justify='center')
+        self.insert(tk.END,text,"center")
 
-		self.bg='old lace'
+        self.bg='old lace'
 
-		self.config(
-			font=(FONT_FAMILY,30),
-			state='disabled',
-			cursor='arrow',
-			height=1,
-			relief='flat',
-			bd=1,
-			width=20,
-			pady=10,
-			bg='old lace',
-			highlightthickness=2,
-			highlightcolor=self.bg,
-			highlightbackground=self.bg,
-			fg='OrangeRed4',
-			)
+        self.config(
+            font=(FONT_FAMILY,30),
+            state='disabled',
+            cursor='arrow',
+            height=1,
+            relief='flat',
+            bd=1,
+            width=20,
+            pady=10,
+            bg='old lace',
+            highlightthickness=2,
+            highlightcolor=self.bg,
+            highlightbackground=self.bg,
+            fg='OrangeRed4',
+            )
 
 
 class myMessage( tk.Text, object ):
 
-	def __init__(self,master,text='',*args,**kwargs):
+    def __init__(self,master,text='',*args,**kwargs):
 
-		tk.Text.__init__(self,master,*args,**kwargs)
+        tk.Text.__init__(self,master,*args,**kwargs)
 
-		self.tag_configure("center", justify='center')
-		self.insert(tk.END,text,"center")
+        self.tag_configure("center", justify='center')
+        self.insert(tk.END,text,"center")
 
-		self.bg='old lace'
+        self.bg='old lace'
 
-		self.config(
-			font=(FONT_FAMILY,15),
-			state='disabled',
-			cursor='arrow',
-			relief='flat',
-			bd=1,
-			height=1,
-			width=30,
-			bg='old lace',
-			highlightthickness=2,
-			highlightcolor=self.bg,
-			highlightbackground=self.bg,
-			fg='OrangeRed4',
-			)
-		self.config(*args,**kwargs)
+        self.config(
+            font=(FONT_FAMILY,15),
+            state='disabled',
+            cursor='arrow',
+            relief='flat',
+            bd=1,
+            height=1,
+            width=30,
+            bg='old lace',
+            highlightthickness=2,
+            highlightcolor=self.bg,
+            highlightbackground=self.bg,
+            fg='OrangeRed4',
+            )
+        self.config(*args,**kwargs)
 
-	def pack( self,*args,**kwargs ):
+    def pack( self,*args,**kwargs ):
 
-		kwargs[ 'fill' ] = 'x'
+        if 'fill' not in kwargs.keys():
+            kwargs[ 'fill' ] = 'x'
 
-		super(myMessage,self).pack(*args,**kwargs)
-
-
-class ScrollableFrame( tk.Frame, object):
-	
-	def __init__(self, master):
-
-		self.master = master
-
-		tk.Frame.__init__(self, self.master)
-
-		self.canvas = tk.Canvas( self.master , borderwidth=0)
-
-		self.frame = tk.Frame( self.canvas )
-
-		self.canvas.pack(side="left", fill="both", expand=True)
-		self.canvas.create_window((0,0), window=self.frame, anchor="nw", 
-								  tags="self.frame")
-		self.canvas.config(yscrollincrement=0.005)
-
-		self.canvas.bind_all("<MouseWheel>", self.OnMouseWheel )
-
-	def OnMouseWheel(self, event):
-
-		self.canvas.yview_scroll(-1*event.delta, "units")
-		pass
-
+        super(myMessage,self).pack(*args,**kwargs)
 
 
 class myDoubleButton( tk.Frame, object):
 
-	def __init__(self, master, leftText='', rightText='', leftCommand=None, rightCommand=None, leftDisabled=True, rightDisabled=False, width=20,):
+    def __init__(self, 
+                 master, 
+                 left_text='', 
+                 right_text='', 
+                 left_command=None, 
+                 right_command=None, 
+                 left_disabled=True, 
+                 right_disabled=False, 
+                 width=20):
 
-		self.master = master
+        self.master = master
+        tk.Frame.__init__(self, self.master, borderwidth=0) # this is only OK for light gray... yeah
 
-		color='light gray'
+        color='light gray'
 
-		tk.Frame.__init__(self, self.master, borderwidth=0) # this is only OK for light gray... yeah
+        self.left_button = myButton(self, width=width/2, color=color, text=left_text, command=left_command, highlightthickness=0, bd=1, disabled=left_disabled)
+        self.left_button.pack(side='left',fill='x',expand=True)
 
-		self.button0 = myButton(self, width=width/2, color=color, text=leftText, command=leftCommand, highlightthickness=0, bd=1, disabled=leftDisabled)
-		self.button0.pack(side='left',fill='x',expand=True)
+        self.right_button = myButton(self, width=width/2, color=color, text=right_text, command=right_command, highlightthickness=0, bd=1, disabled=right_disabled)
+        self.right_button.pack(side='left',fill='x',expand=True)
 
-		self.button1 = myButton(self, width=width/2, color=color, text=rightText, command=rightCommand, highlightthickness=0, bd=1, disabled=rightDisabled)
-		self.button1.pack(side='left',fill='x',expand=True)
+        return
 
-		pass
+    def set_left_disabled(self, val = True):
 
-	def SetLeftDisabled(self, val = True):
+        if val:
+            self.left_button.disable()
+        else:
+            self.left_button.enable()
+        return
 
-		if val:
-			self.button0.disable()
-			#print 'disable left'
-			pass
-		else:
-			self.button0.enable()
-			#print 'enable left'
-			pass
+    def set_right_disabled(self, val = True):
 
-		return
-
-	def SetRightDisabled(self, val = True):
-
-		if val:
-			self.button1.disable()
-			#print 'disable right'
-			pass
-		else:
-			self.button1.enable()
-			#print 'enable right'
-			pass
+        if val:
+            self.right_button.disable()
+        else:
+            self.right_button.enable()
+        return
 
 
 
 class myPageList( tk.Frame, object):
 
-	def __init__(self, master, nameList, switchCommand=None, selectionCommand=None, width=20):
+    def __init__(self, 
+                 master, 
+                 name_list, 
+                 selection_change_fn=lambda: None, 
+                 width=20):
 
-		self.master = master
-		self.switchCommand = switchCommand
-		self.selectionCommand = selectionCommand
+        self.master = master
+        self.selection_change_fn = selection_change_fn
 
-		tk.Frame.__init__(self, self.master)
+        tk.Frame.__init__(self, self.master)
 
-		self.showedStart = 0
+        self.visible_index = 0
 
-		self.fullNameList = nameList
+        self.full_name_list = name_list
+        self.name_list = name_list
 
-		self.nameList = nameList
+        self.buttons = []
+        self.selection = None
+        self.filter = ''
 
-		self.showedButtons = []
+        # bind all keys to filter
 
-		self.selection = None
+        for char in string.ascii_letters+string.digits+string.punctuation:
+            if char == '<':
+                char = '<less>'
+                pass
+            self.bind_all(char, self.key_pressed)
+            pass
 
-		self.filter = ''
+        self.bind_all('<space>', self.key_pressed)
+        self.bind_all('<BackSpace>', self.BS_pressed)
 
-		# bind all keys to filter
+        # display buttons. We will only change names and colors after this, not repack them (that way it doesn't look jumpy)
+        for i in xrange(5):
+            self.buttons.append( myButton( self , text='', command=self.choice_made, color='gray' ) )
+            self.buttons[-1].pack(fill='x')
 
-		for char in string.ascii_letters+string.digits+string.punctuation:
-			if char == '<':
-				char = '<less>'
-				pass
-			self.bind_all(char, self.keyPressed)
-			pass
+        if len( self.full_name_list ) > 5:
+            self.more_button = myDoubleButton(
+                self, 
+                left_text='< BACK', 
+                right_text='MORE >', 
+                left_command=self.back_choices,
+                right_command=self.next_choices,
+                left_disabled = True
+                )
+            self.more_button.pack(side='bottom',fill='x')
 
-		self.bind_all('<space>', self.keyPressed)
+        self.display_list()
+        return
 
-		self.bind_all('<BackSpace>', self.BSPressed)
 
-		# display buttons. We will only change names and colors after this, not repack them.
+    def BS_pressed(self,event):
 
-		for i in xrange(5):
-			self.showedButtons.append( myButton( self , text='', command=self.choiceMade, color='gray' ) )
-			self.showedButtons[-1].pack(fill='x')
+        self.selection = None
 
-			pass
+        for button in self.buttons:
+            button.make_inactive()
 
-		if len( self.fullNameList ) > 5:
-			self.moreButton = myDoubleButton(
-				self, 
-				leftText='< BACK', 
-				rightText='MORE >', 
-				leftCommand=self.backChoices,
-				rightCommand=self.nextChoices,
-				leftDisabled = True
-				#color='light gray',
-				)
-			self.moreButton.pack(side='bottom',fill='x')
+        if self.filter:
+            self.visible_index = 0
 
-		self.displayList()
+        self.filter = self.filter[:-1]
 
-		self.filter = ''
+        self.name_list = [x for x in self.full_name_list if self.filter.lower() in x.lower()]
 
-	def BSPressed(self,event):
+        self.display_list()
+        return
 
-		self.selection = None
 
-		for button in self.showedButtons:
-			button.makeInactive()
-			pass
+    def key_pressed(self,event):
 
-		self.filter = self.filter[:-1]
+        self.selection = None
 
-		self.nameList = [x for x in self.fullNameList if self.filter.lower() in x.lower()]
+        for button in self.buttons:
+            button.make_inactive()
+            pass
 
-		self.showedStart = 0
+        # don't keep adding letters if there is nothing left of the list!
+        if not self.name_list:
+            return
 
-		self.displayList()
+        self.filter += event.char
 
+        self.name_list = [x for x in self.full_name_list if self.filter.lower() in x.lower()]
 
-	def keyPressed(self,event):
+        self.visible_index = 0
 
-		self.selection = None
+        self.display_list()
 
-		for button in self.showedButtons:
-			button.makeInactive()
-			pass
+        return
 
-		# don't keep adding letters if there is nothing left of the list!
-		if not self.nameList:
-			return
 
-		self.filter += event.char
+    def display_list(self):
 
-		self.nameList = [x for x in self.fullNameList if self.filter.lower() in x.lower()]
+        for button in self.buttons:
+            button.make_inactive()
+            pass
 
-		self.showedStart = 0
+        active_cutoff = min(5,len(self.name_list) - self.visible_index)
 
-		self.displayList()
+        for i in xrange(active_cutoff):
+            self.buttons[i].enable()
+            self.buttons[i].replace_text(self.name_list[self.visible_index + i])
 
+        for i in xrange( active_cutoff, 5 ):
+            self.buttons[i].disable()
+            self.buttons[i].replace_text('')
 
-	def displayList(self):
+        if len(self.full_name_list) > 5: # disable/enable page buttons
+            self.more_button.set_left_disabled( self.visible_index == 0 )
+            self.more_button.set_right_disabled( self.visible_index+5 >= len( self.name_list ) )
 
-		try:
-			self.passIn.pack_forget()
-			pass
-		except AttributeError:
-			pass
+        return
 
-		for button in self.showedButtons:
-			button.makeInactive()
-			pass
 
-		for i in xrange( min(5,len(self.nameList) - self.showedStart)):
+    def next_choices(self, event):
 
-			self.showedButtons[i].enable()
-			self.showedButtons[i].changeText(self.nameList[self.showedStart + i])
-			pass
+        if self.visible_index + 5 >= len(self.name_list):
+            return
 
-		for i in xrange( min(5,len(self.nameList) - self.showedStart), 5 ):
+        self.visible_index += 5
+        self.selection_change_fn()
+        self.selection = None
+        self.display_list()
 
-			self.showedButtons[i].disable()
-			self.showedButtons[i].changeText('')
-			pass
+        return
 
-		if len(self.fullNameList) > 5:
 
-			if self.showedStart == 0:
-				self.moreButton.SetLeftDisabled(True)
-				pass
-			else:
-				self.moreButton.SetLeftDisabled(False)
-				pass
-			if self.showedStart+5 >= len( self.nameList ):
-				self.moreButton.SetRightDisabled(True)
-				pass
-			else:
-				self.moreButton.SetRightDisabled(False)
-			pass
+    def back_choices(self, event):
 
-		pass
+        if self.visible_index == 0:
+                return
 
-	def nextChoices(self, event):
+        self.visible_index -= 5
+        self.visible_index = max(self.visible_index, 0)
 
-		if self.showedStart + 5 >= len(self.nameList):
-			return
+        self.selection_change_fn()
+        self.selection = None
+        self.display_list()
 
-		self.showedStart += 5
+        return
 
-		if self.switchCommand:
-			self.switchCommand()
-			pass
 
-		self.displayList()
+    def choice_made( self, event):
 
-		self.selection = None
+        self.selection = event.widget.get(1.0,tk.END).strip()
 
-		pass
+        for button in self.buttons:
+            button.make_inactive()
+            
+        event.widget.make_active()
+        self.selection_change_fn()
+        return
 
-	def backChoices(self, event):
 
-		if self.showedStart - 5 < 0:
-			if self.showedStart:
-				self.showedStart = 5
-				pass
-			else:
-				return
+    def set_selection( self, index ):
 
-		self.showedStart -= 5
+        button = self.buttons[ index ]
+        self.selection = button.get(1.0,tk.END).strip()
 
-		if self.switchCommand:
-			self.switchCommand()
-			pass
+        for button in self.buttons:
+            button.make_inactive()
+            
+        button.make_active()
+        self.selection_change_fn()
+        return
 
-		self.displayList()
 
-		self.selection = None
+    def get_selection( self ):
+        return self.selection
 
-		pass
 
-	def choiceMade( self, event):
+    def destroy( self ): # clean up nicely (though whenever this is destroyed, change_state should unbind stuff anyway)
 
-		self.selection = event.widget.get(1.0,tk.END).strip()
+        for char in string.ascii_letters+string.digits+string.punctuation:
+            if char == '<':
+                char = '<less>'
+                pass
+            self.unbind_all(char)
+            pass
 
-		for button in self.showedButtons:
-			button.makeInactive()
-			pass
-			
-		event.widget.makeActive()
+        self.unbind_all('<space>')
+        self.unbind_all('<BackSpace>')
 
-		if self.selectionCommand:
-			self.selectionCommand()
-			pass
+        super(myPageList,self).destroy()
 
-	def setSelection( self, index ):
-
-		theButton = self.showedButtons[ index ]
-
-		self.selection = theButton.get(1.0,tk.END).strip()
-
-		for button in self.showedButtons:
-			button.makeInactive()
-			pass
-			
-		theButton.makeActive()
-
-		if self.selectionCommand:
-			self.selectionCommand()
-			pass
-
-	def getSelection( self ):
-
-		return self.selection
-
-	def getPassword( self ):
-
-		if not self.selection:
-			return None
-
-		return self.passIn.get()
-
-	def destroy( self ):
-
-		for char in string.ascii_letters+string.digits+string.punctuation:
-			if char == '<':
-				char = '<less>'
-				pass
-			self.unbind_all(char)
-			pass
-
-		self.unbind_all('<space>')
-
-		self.unbind_all('<BackSpace>')
-
-		super(myPageList,self).destroy()
-
-		return
+        return
 
 
 
 class myWarningManager( tk.Frame, object ):
 
-	def __init__(self, master):
+    def __init__(self, master):
 
-		self.master = master
+        self.master = master
+        tk.Frame.__init__(self,self.master,height=0)
+        self.warnings = {}
 
-		tk.Frame.__init__(self,self.master,height=0)
+        return
 
-		self.warnings = {}
+    # show a new warning
+    def display_warning(self, name, text):
 
-	# show a new warning
-	def display_warning(self, name, text):
+        # if this one already exists, it is cleared and replaced.
+        if name in self.warnings.keys():
+            self.warnings[ name ].pack_forget()
+            self.warnings[ name ].destroy()
+            pass
 
-		# if this one already exists, it is cleared and replaced.
-		if name in self.warnings.keys():
-			self.warnings[ name ].pack_forget()
-			self.warnings[ name ].destroy()
-			pass
+        self.warnings[ name ] = myMessage( self, text = text, height = text.count('\n')+1)
+        self.warnings[ name ].pack(fill='x')
 
-		numLines = text.count('\n') + 1
+        # make sure the manager is packed as well.
+        # if you pack the manager with no warnings in it, it shows up as a 1-pixel wide line :(
+        # that's why you have to do this shenanigans instead of packing it right away.
+        if not self.winfo_ismapped():
+            self._pack()
+            pass
 
-		self.warnings[ name ] = myMessage( self, text = text, height = numLines)
-		self.warnings[ name ].pack(fill='x')
+        return
 
-		if not self.winfo_ismapped():
-			self._pack()
-			pass
+    # clear warning with name 'name'
+    def clear(self, name):
 
-	# clear warning with name 'name'
-	def clear(self, name):
+        if not name in self.warnings.keys():
+            raise Exception('There is no warning with name \''+name+'\'.')
 
-		if not name in self.warnings.keys():
+        self.warnings[ name ].pack_forget()
+        self.warnings[ name ].destroy()
 
-			raise Exception('There is no warning with name \''+name+'\'.')
+        self.warnings.pop( name )
 
-		self.warnings[ name ].pack_forget()
-		self.warnings[ name ].destroy()
+        # no more - clear the manager as well
+        if not self.warnings:
+            self.pack_forget()
 
-		self.warnings.pop( name )
-
-		if not self.warnings:
-			self.pack_forget()
-			pass
-
-
-	# try to clear warning with name 'name', if it doesn't exist, that's fine.
-	def try_clear(self, name):
-
-		if not name in self.warnings.keys():
-			return
-
-		self.warnings[ name ].pack_forget()
-		self.warnings[ name ].destroy()
-
-		self.warnings.pop( name )
-
-		if not self.warnings:
-			self.pack_forget()
-			pass
+        return
 
 
-	# clear all warnings present.
-	def clear_all(self):
+    # try to clear warning with name 'name', if it doesn't exist, that's fine.
+    def try_clear(self, name):
 
-		for child in self.winfo_children():
-			child.pack_forget()
-			child.destroy()
+        if not name in self.warnings.keys():
+            return
 
-		self.warnings = {}
+        self.warnings[ name ].pack_forget()
+        self.warnings[ name ].destroy()
 
-		self.pack_forget()
+        self.warnings.pop( name )
 
-	# this one packs individual warnings
-	def _pack(self):
+        if not self.warnings:
+            self.pack_forget()
+        
+        return
 
-		if self.packing:
-			super(myWarningManager,self).pack(*self.pack_args,**self.pack_kwargs)
-			pass
 
-		return
+    # clear all warnings present.
+    def clear_all(self):
 
-	# this is to "pack" the larger warning manager class
-	def pack(self,*args,**kwargs):
+        for child in self.winfo_children():
+            child.pack_forget()
+            child.destroy()
 
-		self.pack_args = args
-		self.pack_kwargs = kwargs
+        self.warnings = {}
 
-		self.packing = True
-		return
+        self.pack_forget()
+        return
+
+    # this is what is called when we actually need to pack the warning manager, 
+    # instead of hiding it
+    def _pack(self):
+        if self.packed:
+            super(myWarningManager,self).pack(*self.pack_args,**self.pack_kwargs)
+        return
+
+    # this is to "pack" the larger warning manager class
+    def pack(self,*args,**kwargs):
+
+        self.pack_args = args
+        self.pack_kwargs = kwargs
+
+        self.packed = True
+        return
 
