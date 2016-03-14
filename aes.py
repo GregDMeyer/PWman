@@ -75,13 +75,13 @@ def check_pass(password):
 	salt = hashed[:4]
 	hashed = hashed[4:]
 
-	return hashed == _get_hash(salt, password, KEY_STRETCH)
+	return hashed == _get_hash(salt, password, KEY_STRETCH + HASH_EXTRA_STRETCH)
 
 
 def save_master_pass(password):
 
 	salt = Random.new().read( 4 )
-	hashed = _get_hash(salt,password,KEY_STRETCH)
+	hashed = _get_hash(salt,password,KEY_STRETCH + HASH_EXTRA_STRETCH)
 	with open(home+'/.pwman_test/passwd','w') as hashfile:
 		hashfile.write( salt + hashed )
 
