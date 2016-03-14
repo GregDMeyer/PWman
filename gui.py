@@ -232,10 +232,10 @@ class Welcome:
 		self.text = myMessage( self.frame, text='Looks like your first time!\nSet a master password for PWman:', height=2 )
 		self.text.pack()
 
-		self.pass_in = myPassEntry( self.frame, text='NEW PASSWORD',)
+		self.pass_in = myEntry( self.frame, password=True, text='NEW PASSWORD',)
 		self.pass_in.pack()
 
-		self.pass_confirm = myPassEntry( self.frame, text='RETYPE PASSWORD',)
+		self.pass_confirm = myEntry( self.frame, password=True, text='RETYPE PASSWORD',)
 		self.pass_confirm.pack()
 		self.pass_confirm.bind('<Return>',self.save)
 
@@ -258,9 +258,7 @@ class Welcome:
 		aes.save_master_pass( new_pass )
 		self.app.password = new_pass
 
-		default_config = config.load_config_file('default.cfg')
-
-		self.app.set_data( data={}, password=new_pass, config=default_config )
+		self.app.set_data( data={}, password=new_pass, config=config.default_config )
 
 		self.app.save_data()
 
@@ -286,7 +284,7 @@ class Login:
 		self.text = myTitle( self.frame, text = 'PWman, v. 2.0')
 		self.text.pack()
 
-		self.passin = myPassEntry( self.frame,text='PASSWORD',)
+		self.passin = myEntry( self.frame, password=True, text='PASSWORD',)
 		self.passin.bind('<Return>', self.login )
 		self.passin.pack()
 
@@ -323,7 +321,7 @@ class Login:
 
 		self.frame.unbind_all('<space>')
 
-		self.passin.focusInsert(event.char)
+		self.passin.focus_insert(event.char)
 
 		return
 
@@ -361,7 +359,7 @@ class Login:
 		self.app.warning_manager.display_warning(name='badPass',
 			text='Incorrect password! Please try again. \n '+str(2-self.tries)+' attempt'+('s' if self.tries<1 else '')+' remaining.')
 
-		self.passin.delete(0,END)
+		self.passin.clear()
 
 		self.tries += 1
 
@@ -445,7 +443,7 @@ class New:
 		self.name_in = myEntry( self.frame, text='NAME' )
 		self.name_in.pack(fill='x')
 
-		self.pass_in = myShowHidePassEntry( self.frame, text='PASSWORD',)
+		self.pass_in = myEntry( self.frame, password=True, showable=True, text='PASSWORD',)
 		self.pass_in.pack()
 		self.pass_in.bind('<Return>',self.save)
 
@@ -501,10 +499,10 @@ class Update:
 		self.title = myTitle( self.frame, text="UPDATE" )
 		self.title.pack(fill='x')
 
-		self.list = myPageList(self.frame, nameList= sorted( self.app.data.keys(), key=lambda s: s.lower() ) )
+		self.list = myPageList(self.frame, name_list= sorted( self.app.data.keys(), key=lambda s: s.lower() ) )
 		self.list.pack(fill='x')
 
-		self.passin = myShowHidePassEntry( self.frame, text='PASSWORD' )
+		self.passin = myEntry( self.frame, password=True, showable=True, text='PASSWORD' )
 		self.passin.pack(fill='x')
 		self.passin.bind('<FocusIn>',self.remove_bindings)
 
@@ -522,7 +520,7 @@ class Update:
 
 		self.app.warning_manager.clear_all()
 
-		if self.list.getSelection() is None:
+		if self.list.get_selection() is None:
 			self.app.warning_manager.display_warning(name='noChoice',text='Choose a password to update.')
 			return
 			pass
@@ -531,7 +529,7 @@ class Update:
 			self.app.warning_manager.display_warning(name='noPass',text='Type the new password in the PASSWORD field.')
 			return
 
-		self.app.data[ self.list.getSelection() ] = self.passin.get()
+		self.app.data[ self.list.get_selection() ] = self.passin.get()
 		self.app.save_data()
 		self.app.change_state( mainMenu )
 		pass
@@ -570,7 +568,7 @@ class Get:
 		self.text = myTitle( self.frame, text="GET PASSWORD" )
 		self.text.pack()
 
-		self.list = myPageList(self.frame, nameList= sorted( self.app.data.keys(), key=lambda s: s.lower() ), selectionCommand=self.get_pass )
+		self.list = myPageList(self.frame, name_list= sorted( self.app.data.keys(), key=lambda s: s.lower() ), selection_change_fn=self.get_pass )
 		self.list.pack()
 
 		self.back_button = myButton( self.frame, text='MAIN MENU', command=lambda e=None: self.app.change_state( mainMenu ) )
@@ -583,7 +581,7 @@ class Get:
 
 	def on_return(self, event):
 
-		if self.list.nameList:
+		if self.list.name_list:
 			self.list.setSelection(0)
 			pass
 
@@ -591,12 +589,12 @@ class Get:
 
 		self.app.warning_manager.clear_all()
 
-		if self.list.getSelection() is None:
+		if self.list.get_selection() is None:
 			self.app.warning_manager.display_warning(name='noSelection',text='Select a password to get!')
 			return
 
-		self.app.clip.copy( self.app.data[ self.list.getSelection() ] )
-		self.app.warning_manager.display_warning(name='copied',text='Password for:\n"'+self.list.getSelection()+'"\ncopied to clipboard.')
+		self.app.clip.copy( self.app.data[ self.list.get_selection() ] )
+		self.app.warning_manager.display_warning(name='copied',text='Password for:\n"'+self.list.get_selection()+'"\ncopied to clipboard.')
 
 		pass
 
@@ -614,7 +612,7 @@ class Remove:
 		self.text = myTitle( self.frame, text="REMOVE\nPASSWORD",height=2 )
 		self.text.pack()
 
-		self.list = myPageList(self.frame, nameList= sorted( self.app.data.keys(), key=lambda s: s.lower() ),)
+		self.list = myPageList(self.frame, name_list= sorted( self.app.data.keys(), key=lambda s: s.lower() ),)
 		self.list.pack()
 
 		self.remove_button = myButton( self.frame, text='REMOVE', command=self.delete_pass ) #eventually decide time in config file
@@ -629,11 +627,11 @@ class Remove:
 
 		self.app.warning_manager.clear_all()
 
-		if self.list.getSelection() is None:
+		if self.list.get_selection() is None:
 			self.app.warning_manager.display_warning(name='noSelection',text='Select a password to remove!')
 			return
 
-		del( self.app.data[ self.list.getSelection() ] )
+		del( self.app.data[ self.list.get_selection() ] )
 		self.app.save_data()
 		self.app.change_state( Remove )
 		return
@@ -676,13 +674,13 @@ class ChangeMasterPass:
 		self.text = myTitle( self.frame, text='MASTER PASSWORD' )
 		self.text.pack()
 
-		self.oldpass_in = myPassEntry( self.frame, text='OLD')
+		self.oldpass_in = myEntry( self.frame, password=True, text='OLD')
 		self.oldpass_in.pack()
 
-		self.pass_in = myPassEntry( self.frame, text='NEW')
+		self.pass_in = myEntry( self.frame, password=True, text='NEW')
 		self.pass_in.pack()
 
-		self.pass_in2 = myPassEntry( self.frame, text='CONFIRM NEW')
+		self.pass_in2 = myEntry( self.frame, password=True, text='CONFIRM NEW')
 		self.pass_in2.pack()
 
 		self.save_button = myButton( self.frame, text='SAVE', command=self.save )

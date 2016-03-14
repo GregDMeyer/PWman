@@ -75,15 +75,13 @@ def check_pass(password):
 	salt = hashed[:4]
 	hashed = hashed[4:]
 
-	return hashed == _get_hash(salt, password)
+	return hashed == _get_hash(salt, password, KEY_STRETCH)
 
 
 def save_master_pass(password):
 
 	salt = Random.new().read( 4 )
-
-	hashed = _get_hash(salt,password)
-
+	hashed = _get_hash(salt,password,KEY_STRETCH)
 	with open(home+'/.pwman_test/passwd','w') as hashfile:
 		hashfile.write( salt + hashed )
 
@@ -103,9 +101,9 @@ def _unpad(string):
 	return string[0:-n_pad_chars]
 
 
-def _get_hash(salt, password):
+def _get_hash(salt, password, iters):
 
-	for i in xrange( KEY_STRETCH + 10 ):
+	for i in xrange( iters ):
 		h = SHA256.new()
 		h.update( salt + password )
 		password = h.digest()
