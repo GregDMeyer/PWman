@@ -10,7 +10,7 @@ import atexit
 
 # execute everything!
 
-root = Tk()
+root = Tk(className='pwman') # class is to keep track of the process for the launcher
 root.title('PWman')
 
 def showAbout():

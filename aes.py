@@ -9,11 +9,10 @@ from cPickle import loads
 import string
 import os
 
-from Cocoa import NSHomeDirectory
-home = NSHomeDirectory()
+home = os.path.expanduser('~')
 
-KEY_STRETCH = 25000
-HASH_EXTRA_STRETCH = 10
+KEY_STRETCH = 24999
+HASH_EXTRA_STRETCH = 2
 
 class EncryptionError(Exception):
 	def __init__(self, msg):
@@ -27,15 +26,11 @@ def encrypt(plaintext,password):
 	salt = Random.new().read( 4 )
 	plaintext = _pad( plaintext )
 
-	for i in xrange( KEY_STRETCH ):
-		h = SHA256.new()
-		h.update( salt + password )
-		password = h.digest()
-		pass
+	key = _get_hash( salt, password, KEY_STRETCH )
 
 	iv = Random.new().read( AES.block_size )
 
-	cipher = AES.new( password, AES.MODE_CBC, iv ) # look into maybe switching to CTR mode for fun?
+	cipher = AES.new( key, AES.MODE_CBC, iv ) # look into maybe switching to CTR mode for fun?
 
 	return salt + iv + cipher.encrypt( plaintext )
 
@@ -44,16 +39,12 @@ def decrypt(ciphertext,password):
 
 	salt = ciphertext[:4]
 
-	for i in xrange( KEY_STRETCH ):
-		h = SHA256.new()
-		h.update( salt + password )
-		password = h.digest()
-		pass
+	key = _get_hash( salt, password, KEY_STRETCH )
 
 	iv = ciphertext[4:20]
 	ciphertext = ciphertext[20:]
 
-	cipher = AES.new( password, AES.MODE_CBC, iv )
+	cipher = AES.new( key, AES.MODE_CBC, iv )
 	plaintext = cipher.decrypt( ciphertext )
 
 	try:
@@ -69,7 +60,7 @@ def decrypt(ciphertext,password):
 
 def check_pass(password):
 
-	with open(home+'/.pwman_test/passwd','r') as f:
+	with open(home+'/Dropbox/.pwman/passwd','r') as f:
 		hashed = f.read()
 
 	salt = hashed[:4]
@@ -82,7 +73,7 @@ def save_master_pass(password):
 
 	salt = Random.new().read( 4 )
 	hashed = _get_hash(salt,password,KEY_STRETCH + HASH_EXTRA_STRETCH)
-	with open(home+'/.pwman_test/passwd','w') as hashfile:
+	with open(home+'/Dropbox/.pwman/passwd','w') as hashfile:
 		hashfile.write( salt + hashed )
 
 	return

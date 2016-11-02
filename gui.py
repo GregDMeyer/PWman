@@ -9,14 +9,13 @@ import string
 import webbrowser
 import aes
 import tkHyperlinkManager
-from os.path import isfile
+from os.path import isfile, expanduser
 import os
 import cPickle
 from passwordGen import make_pass
 import config
 
-from Cocoa import NSHomeDirectory
-home = NSHomeDirectory()
+home = expanduser('~')
 
 ### about window
 
@@ -124,7 +123,7 @@ class App:
 		self.warning_manager = myWarningManager( self.master )
 		self.warning_manager.pack(side='bottom',fill='x')
 
-		if not isfile(home+'/.pwman_test/passwd'):
+		if not isfile(home+'/Dropbox/.pwman/passwd'):
 			self.current = Welcome( self.master,self )
 			self.tutorial = True
 		else:
@@ -135,7 +134,7 @@ class App:
 		self.password = None
 		self.config = None
 
-		self.clip = copypaste.Clipboard()
+		self.clip = copypaste.Clipboard(self.master)
 
 		self.master.bind_all('<Command-w>',self.Quit)
 
@@ -175,7 +174,7 @@ class App:
 
 	def save_data(self):
 		if not self.data is None:
-			with open( home+'/.pwman_test/data', 'w' ) as f:
+			with open( home+'/Dropbox/.pwman/data', 'w' ) as f:
 				f.write( aes.encrypt( cPickle.dumps([self.data, self.config]), self.password) )
 		return
 
@@ -184,8 +183,6 @@ class App:
 		#get the old clipboard back
 		self.clip.revert()
 
-		self.master.quit()
-		sys.exit()
 		pass
 
 
@@ -253,7 +250,7 @@ class Welcome:
 
 		new_pass = self.pass_in.get()
 
-		os.makedirs(home+'/.pwman_test')
+		os.makedirs(home+'/Dropbox/.pwman')
 
 		aes.save_master_pass( new_pass )
 		self.app.password = new_pass
@@ -334,13 +331,16 @@ class Login:
 
 			data = {}
 			config = {}
-			if isfile(home+'/.pwman_test/data'):
+			if isfile(home+'/Dropbox/.pwman/data'):
 
-				with open(home+'/.pwman_test/data') as f:
+				with open(home+'/Dropbox/.pwman/data') as f:
 					datastring = aes.decrypt( f.read(), password )
 
 				if datastring.strip() != '':
-					data,config = cPickle.loads( datastring )
+					try:
+						data,config = cPickle.loads( datastring )
+					except ValueError:
+						data = cPickle.loads( datastring )
 
 			self.app.set_data( data, password, config )
 			self.app.change_state( mainMenu )
@@ -582,7 +582,7 @@ class Get:
 	def on_return(self, event):
 
 		if self.list.name_list:
-			self.list.setSelection(0)
+			self.list.set_selection(0)
 			pass
 
 	def get_pass( self, event=None ):
@@ -612,8 +612,8 @@ class Remove:
 		self.text = myTitle( self.frame, text="REMOVE\nPASSWORD",height=2 )
 		self.text.pack()
 
-		self.list = myPageList(self.frame, name_list= sorted( self.app.data.keys(), key=lambda s: s.lower() ),)
-		self.list.pack()
+		self.lst = myPageList(self.frame, name_list= sorted( self.app.data.keys(), key=lambda s: s.lower() ),)
+		self.lst.pack()
 
 		self.remove_button = myButton( self.frame, text='REMOVE', command=self.delete_pass ) #eventually decide time in config file
 		self.remove_button.pack()
@@ -627,13 +627,17 @@ class Remove:
 
 		self.app.warning_manager.clear_all()
 
-		if self.list.get_selection() is None:
+		if self.lst.get_selection() is None:
 			self.app.warning_manager.display_warning(name='noSelection',text='Select a password to remove!')
 			return
 
-		del( self.app.data[ self.list.get_selection() ] )
+		del( self.app.data[ self.lst.get_selection() ] )
 		self.app.save_data()
-		self.app.change_state( Remove )
+
+		self.lst.name_list = sorted( self.app.data.keys(), key=lambda s: s.lower() )
+		self.lst.display_list()
+
+		self.app.warning_manager.display_warning(name='removed',text='Password for\n"'+self.lst.get_selection()+'"\nremoved.')
 		return
 
 

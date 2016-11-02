@@ -8,7 +8,7 @@ import Tkinter as tk
 import tkFont
 import string
 
-FONT_FAMILY = 'Avenir Light'
+FONT_FAMILY = 'DejaVu Sans ExtraLight'
 
 class myButton( tk.Text ):
 
@@ -618,8 +618,8 @@ class myPageList( tk.Frame, object):
         button = self.buttons[ index ]
         self.selection = button.get(1.0,tk.END).strip()
 
-        for button in self.buttons:
-            button.make_inactive()
+        for b in self.buttons:
+            b.make_inactive()
             
         button.make_active()
         self.selection_change_fn()
