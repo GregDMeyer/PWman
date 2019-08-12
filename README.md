@@ -1,3 +1,5 @@
+[NOT MAINTAINED]
+
 A minimalist password manager.
 
 Designed for speed of access, ease of use, and simplicity.
